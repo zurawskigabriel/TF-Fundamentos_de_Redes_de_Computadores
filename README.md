@@ -7,150 +7,150 @@ Sistema de roteamento de mensagens em Java utilizando sockets UDP, implementando
 ---
 
 ### **Entrega 1: Base de Comunicação UDP** ✅
-- [x] Implementação da classe `Roteador` (main entry point)
-- [x] Implementação da classe `RecebedorMensagens` (thread para recepção)
-- [x] Implementação da classe `Terminal` (interface de linha de comando)
-- [x] Comunicação básica UDP entre nós
-- [x] Interface de linha de comando funcional
+
+**Funcionalidades:**
+- [x] Inicialização do sistema na porta 6000
+- [x] Envio de mensagens UDP para um destino específico (IP e porta)
+- [x] Recepção de mensagens UDP de qualquer origem
+- [x] Interface de linha de comando para interação do usuário
+- [x] Comando para enviar mensagens: `enviar <ip> <porta> <mensagem>`
+- [x] Comando para encerrar o sistema: `sair`
 
 **Testes:**
-- Inicialização do roteador na porta 6000
-- Envio de mensagens entre instâncias locais
-- Recepção e exibição de mensagens
+- Iniciar o roteador na porta 6000
+- Enviar mensagens entre instâncias locais
+- Receber e exibir mensagens corretamente
 
 ---
 
 ### **Entrega 2: Estrutura de Dados para Roteamento**
 
-**Tarefas:**
-- [ ] Criar classe `TabelaRoteamento` para armazenar rotas conhecidas
-- [ ] Implementar classe `No` para representar nós da rede
-- [ ] Criar classe `Rota` para representar uma rota específica
-- [ ] Implementar classe `ProtocoloMensagem` para tipos de mensagem
+**Funcionalidades:**
+- [x] Armazenamento de tabela de roteamento com rotas conhecidas
+- [x] Representação de vizinhos diretos com seus endereços IP
+- [x] Representação de rotas individuais (destino, métrica, próximo salto)
 
 **Testes:**
-- Criar tabela de roteamento e adicionar/remover rotas
-- Verificar busca da melhor rota por destino
-- Testar criação e manipulação de objetos No e Rota
+- Adicionar e remover rotas da tabela
+- Buscar melhor rota para um destino específico
+- Gerenciar informações de vizinhos
 
 ---
 
 ### **Entrega 3: Protocolo de Descoberta de Vizinhos**
 
-OBS: QUANDO LER O ARQUIVO DE CONFIGURAÇÃO MANDAR O @ COM O PRÓPRIO IP PARA SE ANUNCIAR.
+**Observação:** Ao ler o arquivo de configuração inicial, enviar mensagem de anúncio com o próprio IP para se apresentar aos vizinhos.
 
-**Tarefas:**
-- [ ] Implementar mensagens HELLO para descoberta de vizinhos
-- [ ] Criar timer para envio periódico de mensagens HELLO (a cada 10 segundos)
-- [ ] Implementar detecção de vizinhos inativos (timeout de 30 segundos)
-- [ ] Criar classe `GerenciadorVizinhos` para gerenciar lista de vizinhos
+**Funcionalidades:**
+- [ ] Leitura de arquivo de configuração com IPs dos vizinhos iniciais
+- [ ] Envio de mensagens de anúncio (HELLO) para descobrir vizinhos
+- [ ] Envio periódico de mensagens HELLO a cada 10 segundos
+- [ ] Detecção de vizinhos inativos após 15 segundos sem resposta
+- [ ] Atualização automática da lista de vizinhos ativos
+- [ ] Remoção de vizinhos que não respondem
 
 **Testes:**
 - Iniciar 2 roteadores e verificar descoberta mútua
-- Parar um roteador e verificar detecção de timeout
-- Verificar envio periódico de mensagens HELLO
+- Desligar um roteador e verificar detecção de timeout
+- Confirmar envio periódico de mensagens HELLO
 
 ---
 
 ### **Entrega 4: Algoritmo de Roteamento (Distance Vector)**
 
-**Tarefas:**
-- [ ] Implementar troca de vetores de distância entre vizinhos
-- [ ] Criar classe `AlgoritmoRoteamento` com algoritmo de Bellman-Ford
-- [ ] Implementar atualização da tabela de roteamento
-- [ ] Adicionar envio periódico da tabela para vizinhos
+**Funcionalidades:**
+- [ ] Troca de vetores de distância entre vizinhos
+- [ ] Cálculo de rotas usando algoritmo de Bellman-Ford
+- [ ] Atualização automática da tabela de roteamento ao receber novos vetores
+- [ ] Envio periódico da tabela de roteamento para todos os vizinhos
+- [ ] Cálculo do menor caminho para cada destino conhecido
 
 **Testes:**
 - Configurar rede com 3 nós (A-B-C) e verificar convergência
-- Testar cálculo de menor caminho
-- Verificar atualização automática das rotas
+- Validar cálculo correto de menor caminho
+- Confirmar atualização automática das rotas
 
 ---
 
 ### **Entrega 5: Encaminhamento de Pacotes**
 
-**Tarefas:**
-- [ ] Modificar protocolo para distinguir mensagens de dados e controle
-- [ ] Implementar classe `EncaminhadorPacotes` para forwarding
-- [ ] Adicionar TTL (Time To Live) aos pacotes de dados
-- [ ] Implementar encaminhamento baseado na tabela de roteamento
+**Funcionalidades:**
+- [ ] Distinção entre mensagens de dados e mensagens de controle
+- [ ] Encaminhamento de pacotes de dados baseado na tabela de roteamento
+- [ ] Implementação de TTL (Time To Live) nos pacotes de dados
+- [ ] Decremento de TTL a cada salto
+- [ ] Descarte de pacotes com TTL = 0
+- [ ] Roteamento de mensagens através de nós intermediários
 
 **Testes:**
 - Enviar mensagem de A para C através de B
-- Verificar decremento de TTL a cada salto
-- Testar descarte de pacotes com TTL = 0
+- Verificar decremento correto de TTL
+- Testar descarte de pacotes com TTL esgotado
 
 ---
 
 ### **Entrega 6: Interface de Usuário Aprimorada**
 
-**Tarefas:**
-- [ ] Adicionar comando `tabela` para exibir tabela de roteamento
-- [ ] Adicionar comando `vizinhos` para listar vizinhos ativos
-- [ ] Adicionar comando `stats` para estatísticas de mensagens
-- [ ] Melhorar logs e mensagens informativas
+**Funcionalidades:**
+- [ ] Comando `tabela` para exibir a tabela de roteamento atual
+- [ ] Comando `vizinhos` para listar todos os vizinhos ativos
+- [ ] Comando `stats` para exibir estatísticas de mensagens (enviadas/recebidas)
+- [ ] Logs informativos sobre eventos da rede
+- [ ] Mensagens claras sobre status das operações
 
 **Testes:**
-- Testar todos os novos comandos
-- Verificar se informações exibidas estão corretas
-- Validar logs durante operação da rede
+- Executar todos os novos comandos e verificar saídas
+- Confirmar que informações exibidas estão corretas
+- Validar logs durante operação normal da rede
 
 ---
 
 ### **Entrega 7: Tratamento de Falhas e Robustez**
 
-**Tarefas:**
-- [ ] Implementar detecção rápida de falhas de vizinhos
-- [ ] Adicionar reconvergência automática após falhas
-- [ ] Implementar limpeza de rotas obsoletas
-- [ ] Adicionar tratamento de exceções
+**Funcionalidades:**
+- [ ] Detecção rápida de falhas de vizinhos (timeout)
+- [ ] Reconvergência automática da rede após falhas
+- [ ] Recálculo de rotas quando um nó falha
+- [ ] Limpeza automática de rotas obsoletas
+- [ ] Tratamento de exceções e erros de rede
+- [ ] Recuperação de estado após falhas temporárias
 
 **Testes:**
-- Parar um nó no meio da rede e verificar reconvergência
+- Desligar um nó no meio da rede e verificar reconvergência
 - Testar múltiplas falhas simultâneas
-- Verificar limpeza de rotas antigas
+- Verificar limpeza de rotas antigas e inválidas
 
 ---
 
 ### **Entrega 8: Otimizações e Testes Finais**
 
-**Tarefas:**
-- [ ] Otimizar performance dos algoritmos
-- [ ] Implementar triggered updates para convergência rápida
-- [ ] Realizar testes completos em diferentes topologias
-- [ ] Documentar funcionamento final do sistema
+**Funcionalidades:**
+- [ ] Otimização de performance dos algoritmos de roteamento
+- [ ] Triggered updates para convergência mais rápida após mudanças
+- [ ] Testes em diferentes topologias de rede
+- [ ] Validação em redes maiores (5-6 nós)
+- [ ] Documentação completa do sistema
 
 **Testes:**
 - Testar rede com múltiplos nós (até 5-6 nós)
-- Verificar performance e tempo de convergência
-- Teste final em topologia complexa (malha)
+- Medir tempo de convergência
+- Teste final em topologia complexa (malha completa)
+- Validar performance geral do sistema
 
 ---
 
-## 🛠️ Como Testar Cada Entrega
+## 🛠️ Ambientes de Teste
 
-### Ambiente de Teste
-```bash
-# Terminal 1 - Roteador A (porta 5000)
-java Roteador
-
-# Terminal 2 - Roteador B (porta 5001)
-java Roteador -porta 5001
-
-# Terminal 3 - Roteador C (porta 5002)
-java Roteador -porta 5002
-```
-
-### Testes de Integração
+### Topologias Sugeridas
 - **Topologia Linear:** A ↔ B ↔ C
-- **Topologia Estrela:** B conectado a A e C
-- **Topologia Malha:** Todos conectados a todos
+- **Topologia Estrela:** B conectado a A e C (B no centro)
+- **Topologia Malha:** Todos os nós conectados entre si
 
-### Métricas de Sucesso
-- ✅ Descoberta automática de todos os nós
-- ✅ Convergência em tempo hábil
-- ✅ Entrega correta de mensagens
-- ✅ Recuperação de falhas
+### Critérios de Sucesso
+- ✅ Descoberta automática de todos os nós da rede
+- ✅ Convergência da tabela de roteamento em tempo adequado
+- ✅ Entrega correta de mensagens em qualquer topologia
+- ✅ Recuperação automática após falhas de nós
 - ✅ Ausência de loops
 
 ---

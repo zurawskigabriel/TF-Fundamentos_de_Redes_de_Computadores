@@ -1,11 +1,12 @@
+package Threads;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-public class RecebedorMensagens implements Runnable {
+public class ThreadDeRecepcao implements Runnable {
     private DatagramSocket socket;
     private static final int BUFFER_SIZE = 1024;
 
-    public RecebedorMensagens(DatagramSocket socket) {
+    public ThreadDeRecepcao(DatagramSocket socket) {
         this.socket = socket;
     }
 

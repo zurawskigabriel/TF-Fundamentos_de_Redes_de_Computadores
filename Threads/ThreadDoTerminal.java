@@ -1,22 +1,25 @@
+package Threads;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Scanner;
 
-public class Terminal implements Runnable
+public class ThreadDoTerminal implements Runnable
 {
     private DatagramSocket socket;
     private Scanner scanner;
 
-    public Terminal(DatagramSocket socket)
+    public ThreadDoTerminal(DatagramSocket socket)
     {
         this.socket = socket;
         this.scanner = new Scanner(System.in);
     }
 
     @Override
-    public void run() {
-        try {
+    public void run()
+    {
+        try
+        {
             while (true) {
                 System.out.print("> ");
                 String comando = scanner.nextLine().trim();
@@ -44,7 +47,8 @@ public class Terminal implements Runnable
         }
     }
 
-    private void processarEnvio(String comando) {
+    private void processarEnvio(String comando)
+    {
         try {
             // Remove "enviar " do início
             String[] partes = comando.substring(7).split(" ", 3);
