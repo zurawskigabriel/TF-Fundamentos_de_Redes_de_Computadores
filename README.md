@@ -37,6 +37,8 @@ Sistema de roteamento de mensagens em Java utilizando sockets UDP, implementando
 
 ### **Entrega 3: Protocolo de Descoberta de Vizinhos**
 
+OBS: QUANDO LER O ARQUIVO DE CONFIGURAÇÃO MANDAR O @ COM O PRÓPRIO IP PARA SE ANUNCIAR.
+
 **Tarefas:**
 - [ ] Implementar mensagens HELLO para descoberta de vizinhos
 - [ ] Criar timer para envio periódico de mensagens HELLO (a cada 10 segundos)
