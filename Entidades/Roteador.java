@@ -19,14 +19,14 @@ public class Roteador
 
     public String ip;
     public TabelaDeRoteamento tabelaDeRoteamento;
-    public List<Nodo> roteadoresVizinhos;
+    public TabelaDeVizinhos tabelaDeVizinhos;
     public DatagramSocket socket;
 
     public Roteador(String ip)
     {
         this.ip = ip;
         tabelaDeRoteamento = new TabelaDeRoteamento();
-        roteadoresVizinhos = new ArrayList<>();
+        tabelaDeVizinhos = new TabelaDeVizinhos();
     }
 
     public void Ligar()
@@ -41,7 +41,7 @@ public class Roteador
             System.out.println("===================================================");
             System.out.println("Roteador iniciado em " + ip + ":" + PORTA_LOCAL);
             System.out.println("Comandos disponíveis:");
-            System.out.println("  enviar <ip> <porta> <mensagem>");
+            System.out.println("  enviar <ip> <mensagem>");
             System.out.println("  sair");
             System.out.println("===================================================");
 
@@ -67,21 +67,22 @@ public class Roteador
 
     public void LerTXTComVizinhos()
     {
-        List<String> vizinhos = new ArrayList<>();
+        List<String> IPsDeVizinhos = new ArrayList<>();
         try
         {
-            vizinhos = Files.readAllLines(Paths.get(NOME_DO_ARQUIVO));
+            IPsDeVizinhos = Files.readAllLines(Paths.get(NOME_DO_ARQUIVO));
         }
         catch (IOException e)
         {
             System.err.println("[ERRO] Erro ao ler arquivo de vizinhos: " + e.getMessage());
         }
 
-        for (String vizinho : vizinhos)
+        for (String ip : IPsDeVizinhos)
         {
-            // TODO: Como a professora disse em aula: QUANDO LER O ARQUIVO DE CONFIGURAÇÃO MANDAR O @ COM O PRÓPRIO IP PARA SE ANUNCIAR.
-            // Neste momento, os endereços IP informados deverão ser cadastrados em uma tabela de roteamento inicial, com métrica igual
-            // a 1 e IP de saída correspondente ao roteador vizinho.
+            EnviarMensagemDeAnuncio(ip);
+            tabelaDeVizinhos.AdicionarVizinho(ip);
+            // Perguntar para a professora se isso deve ser feito, pois, em teoria vou receber anúncios de rota dos vizinhos por conta das linhas anteriores.
+            tabelaDeRoteamento.AdicionarRota(ip, 1, ip);
         }
     }
 
@@ -94,14 +95,14 @@ public class Roteador
 
             // Cria o pacote UDP
             InetAddress enderecoDestino = InetAddress.getByName(ipDestino);
-            DatagramPacket pacote = new DatagramPacket(mensagemCodificada, mensagemCodificada.length, enderecoDestino, Roteador.PORTA_LOCAL);
+            DatagramPacket pacote = new DatagramPacket(mensagemCodificada, mensagemCodificada.length, enderecoDestino, PORTA_LOCAL);
 
             // TODO: Procura o próximo salto na tabela de roteamento
 
             // TODO: Envia o pacote para o próximo salto
 
 
-            System.out.println("[LOG] Mensagem \"" + mensagem + "\" enviada para " + ipDestino + ":" + Roteador.PORTA_LOCAL);
+            System.out.println("[LOG] Mensagem \"" + mensagem + "\" enviada para " + ipDestino + ":" + PORTA_LOCAL);
 
         } catch (NumberFormatException e) {
             System.out.println("[ERRO] Porta inválida. Deve ser um número.");

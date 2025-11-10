@@ -1,6 +1,8 @@
 package Threads;
 import java.net.DatagramPacket;
+import java.util.List;
 
+import Entidades.Rota;
 import Entidades.Roteador;
 
 public class ThreadDeRecepcao implements Runnable
@@ -36,16 +38,16 @@ public class ThreadDeRecepcao implements Runnable
                 switch (tipo)
                 {
                     case '@':
-                        TratarMensagemDeAnuncio(mensagem, ipOrigem, portaOrigem);
+                        TratarMensagemDeAnuncio(pacoteRecebido);
                         break;
                     case '*':
-                        TratarMensagemDeAtualizacaoDeTabela(mensagem, ipOrigem, portaOrigem);
+                        TratarMensagemDeAtualizacaoDeTabela(pacoteRecebido);
                         break;
                     case '!':
-                        TratarMensagemDeTexto(mensagem, ipOrigem, portaOrigem);
+                        TratarMensagemDeTexto(pacoteRecebido);
                         break;
                     default:
-                        System.err.println("\nTipo desconhecido de mensagem de " + ipOrigem + ":" + portaOrigem + " | Mensagem: " + mensagem);
+                        System.err.println("\n[ERRO] Tipo desconhecido de mensagem de " + ipOrigem + ":" + portaOrigem + " | Corpo da mensagem: " + mensagem);
                         break;
                 }
 
@@ -56,28 +58,40 @@ public class ThreadDeRecepcao implements Runnable
         {
             if (!roteador.socket.isClosed())
             {
-                System.err.println("Erro ao receber mensagem: " + e.getMessage());
+                System.err.println("[ERRO] Erro ao receber mensagem: " + e.getMessage());
             }
         }
     }
 
-    private void TratarMensagemDeAnuncio(String mensagem, String ipOrigem, int portaOrigem)
+    private void TratarMensagemDeAnuncio(DatagramPacket pacoteRecebido)
     {
+        String mensagem = new String(pacoteRecebido.getData(), 0, pacoteRecebido.getLength());
+
         String ipAnunciado = mensagem.substring(1);
-        System.out.println("\n[RECEBIDO @] | (" + ipOrigem + ":" + portaOrigem + ") | IP Anunciado: " + ipAnunciado + " [" + mensagem +']');
-        // TODO: Implementar o processamento do anúncio de vizinho
+        System.out.println("\n[RECEBIDO @] | IP Anunciado: " + ipAnunciado + " [" + mensagem +']');
+        roteador.tabelaDeVizinhos.AdicionarVizinho(ipAnunciado);
+        roteador.tabelaDeRoteamento.AdicionarRota(ipAnunciado, 1, ipAnunciado); // Não sei se está certo colocar o próximo salto como o próprio IP anunciado, perguntar para professora.
     }
 
-    private void TratarMensagemDeAtualizacaoDeTabela(String mensagem, String ipOrigem, int portaOrigem)
+    private void TratarMensagemDeAtualizacaoDeTabela(DatagramPacket pacoteRecebido)
     {
-        System.out.println("\n[RECEBIDO *] | (" + ipOrigem + ":" + portaOrigem + ") | [" + mensagem +']');
-        // TODO: Implementar o processamento da atualização da tabela de roteamento
+        List<Rota> novasRotas;
+
+        String mensagem = new String(pacoteRecebido.getData(), 0, pacoteRecebido.getLength());
+
+        System.out.println("\n[RECEBIDO *] | [" + mensagem +']');
+
+        // TODO: Implementar o parser das mensagens com as novas rotas (conforme o enunciado) e atualizar a tabela de roteamento
+
+        //roteador.AtualizarTabela(mensagem);
     }
 
-    private void TratarMensagemDeTexto(String mensagem, String ipOrigem, int portaOrigem)
+    private void TratarMensagemDeTexto(DatagramPacket pacoteRecebido)
     {
         try
         {
+            String mensagem = new String(pacoteRecebido.getData(), 0, pacoteRecebido.getLength());
+
             String mensagemSemTipo = mensagem.substring(1);
             String ipOrigemDoCorpo = mensagemSemTipo.split(";")[0];
             String ipDestinoDoCorpo = mensagemSemTipo.split(";")[1];
@@ -85,18 +99,18 @@ public class ThreadDeRecepcao implements Runnable
 
             if (ipDestinoDoCorpo == roteador.ip)
             {
-                System.out.println("\n[RECEBIDO ! ENTREGA REALIZADA] | (" + ipOrigem + ":" + portaOrigem + ") | Texto: " + texto + " Origem: " + ipOrigemDoCorpo + " Destino: " + ipDestinoDoCorpo + "| [" + mensagem +']');
+                System.out.println("\n[RECEBIDO ! ENTREGA REALIZADA] | Texto: " + texto + " Origem: " + ipOrigemDoCorpo + " Destino: " + ipDestinoDoCorpo + "| [" + mensagem +']');
                 return;
             }
             else
             {
-                System.out.println("\n[RECEBIDO ! ENTREGA NÃO REALIZADA] | (" + ipOrigem + ":" + portaOrigem + ") | Texto: " + texto + " Origem: " + ipOrigemDoCorpo + " Destino: " + ipDestinoDoCorpo + "| [" + mensagem +']');
-                // TODO: Implementar o reencaminhamento da mensagem para o próximo salto
+                System.out.println("\n[RECEBIDO ! ENTREGA NÃO REALIZADA] | Texto: " + texto + " Origem: " + ipOrigemDoCorpo + " Destino: " + ipDestinoDoCorpo + "| [" + mensagem +']');
+                roteador.EnviarMensagemDeTexto(ipDestinoDoCorpo, mensagem);
             }
         }
         catch (Exception e)
         {
-            System.out.println("Erro ao processar mensagem de texto: " + e.getMessage());
+            System.out.println("[ERRO] Erro ao processar mensagem de texto: " + e.getMessage());
         }
     }
 }

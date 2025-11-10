@@ -2,14 +2,14 @@ package Entidades;
 
 import java.time.LocalDateTime;
 
-public class Nodo
+public class Vizinho
 {
-    public String IPgateway;
+    public String ip;
     public LocalDateTime ultimoUpdate;
 
-    public Nodo(String IPgateway)
+    public Vizinho(String ip)
     {
-        this.IPgateway = IPgateway;
+        this.ip = ip;
         this.ultimoUpdate = LocalDateTime.now();
     }
 }

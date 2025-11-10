@@ -1,5 +1,7 @@
 package Entidades;
 
+import java.time.LocalDateTime;
+
 public class Rota
 {
     public String ipEntrada;
