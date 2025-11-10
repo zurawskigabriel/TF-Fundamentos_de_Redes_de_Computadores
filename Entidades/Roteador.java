@@ -1,22 +1,26 @@
 package Entidades;
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import Threads.ThreadDeHeartbeat;
 import Threads.ThreadDeRecepcao;
 import Threads.ThreadDoTerminal;
 
 public class Roteador
 {
-    private static final String NOME_DO_ARQUIVO = "roteadores.txt";
-    private static final int PORTA_LOCAL = 6000;
+    public static final String NOME_DO_ARQUIVO = "roteadores.txt";
+    public static final int PORTA_LOCAL = 6000;
 
     public String ip;
     public TabelaDeRoteamento tabelaDeRoteamento;
     public List<Nodo> roteadoresVizinhos;
+    public DatagramSocket socket;
 
     public Roteador(String ip)
     {
@@ -28,12 +32,11 @@ public class Roteador
     public void Ligar()
     {
         // Descomentar quando implementar a leitura do arquivo de vizinhos
-        List<String> vizinhosIniciais = LerTXTComVizinhos();
-        //SeAnunciarParaOsVizinho(vizinhosIniciais);
+        LerTXTComVizinhos();
 
         try
         {
-            DatagramSocket socket = new DatagramSocket(PORTA_LOCAL);
+            socket = new DatagramSocket(PORTA_LOCAL);
 
             System.out.println("===================================================");
             System.out.println("Roteador iniciado em " + ip + ":" + PORTA_LOCAL);
@@ -42,25 +45,27 @@ public class Roteador
             System.out.println("  sair");
             System.out.println("===================================================");
 
-            Thread threadDeRecepcao = new Thread(new ThreadDeRecepcao(socket, this));
-            Thread threadDoTerminal = new Thread(new ThreadDoTerminal(socket));
+            Thread threadDeRecepcao = new Thread(new ThreadDeRecepcao(this));
+            Thread threadDeHeartbeat = new Thread(new ThreadDeHeartbeat(this));
+            Thread threadDoTerminal = new Thread(new ThreadDoTerminal(this));
 
             threadDeRecepcao.start();
+            threadDeHeartbeat.start();
             threadDoTerminal.start();
 
             threadDoTerminal.join();
 
             socket.close();
-            System.out.println("Roteador encerrado.");
+            System.out.println("[LOG] Roteador encerrado.");
             System.exit(0);
 
         } catch (Exception e) {
-            System.err.println("Erro ao iniciar o roteador: " + e.getMessage());
+            System.err.println("[ERRO] Erro ao iniciar o roteador: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public List<String> LerTXTComVizinhos()
+    public void LerTXTComVizinhos()
     {
         List<String> vizinhos = new ArrayList<>();
         try
@@ -69,17 +74,44 @@ public class Roteador
         }
         catch (IOException e)
         {
-            System.err.println("Erro ao ler arquivo de vizinhos: " + e.getMessage());
+            System.err.println("[ERRO] Erro ao ler arquivo de vizinhos: " + e.getMessage());
         }
-        return vizinhos;
+
+        for (String vizinho : vizinhos)
+        {
+            // TODO: Como a professora disse em aula: QUANDO LER O ARQUIVO DE CONFIGURAÇÃO MANDAR O @ COM O PRÓPRIO IP PARA SE ANUNCIAR.
+            // Neste momento, os endereços IP informados deverão ser cadastrados em uma tabela de roteamento inicial, com métrica igual
+            // a 1 e IP de saída correspondente ao roteador vizinho.
+        }
     }
 
-    // Como a professora disse em aula: QUANDO LER O ARQUIVO DE CONFIGURAÇÃO MANDAR O @ COM O PRÓPRIO IP PARA SE ANUNCIAR.
-    public void SeAnunciarParaOsVizinho(List<String> vizinhosIniciais)
+    public void EnviarMensagemDeTexto(String ipDestino, String mensagem)
     {
-        for (String vizinho : vizinhosIniciais)
+        try
         {
-            // Enviar mensagem de anúncio para cada vizinho. Implementar a mensagem @
+            // Converte a mensagem em bytes
+            byte[] mensagemCodificada = mensagem.getBytes();
+
+            // Cria o pacote UDP
+            InetAddress enderecoDestino = InetAddress.getByName(ipDestino);
+            DatagramPacket pacote = new DatagramPacket(mensagemCodificada, mensagemCodificada.length, enderecoDestino, Roteador.PORTA_LOCAL);
+
+            // TODO: Procura o próximo salto na tabela de roteamento
+
+            // TODO: Envia o pacote para o próximo salto
+
+
+            System.out.println("[LOG] Mensagem \"" + mensagem + "\" enviada para " + ipDestino + ":" + Roteador.PORTA_LOCAL);
+
+        } catch (NumberFormatException e) {
+            System.out.println("[ERRO] Porta inválida. Deve ser um número.");
+        } catch (Exception e) {
+            System.err.println("[ERRO] Erro ao enviar mensagem: " + e.getMessage());
         }
+    }
+
+    public void EnviarMensagemDeAnuncio(String ipDestino)
+    {
+        // TODO: Implementar o envio da mensagem de anúncio (@)
     }
 }

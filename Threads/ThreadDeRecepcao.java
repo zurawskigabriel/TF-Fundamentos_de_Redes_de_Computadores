@@ -1,6 +1,5 @@
 package Threads;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 
 import Entidades.Roteador;
 
@@ -8,13 +7,11 @@ public class ThreadDeRecepcao implements Runnable
 {
     private static final int TAMANHO_DO_BUFFER = 1024;
 
-    private DatagramSocket socket;
     private byte[] buffer;
     private Roteador roteador;
 
-    public ThreadDeRecepcao(DatagramSocket socket, Roteador roteador)
+    public ThreadDeRecepcao(Roteador roteador)
     {
-        this.socket = socket;
         this.buffer = new byte[TAMANHO_DO_BUFFER];
         this.roteador = roteador;
     }
@@ -24,11 +21,11 @@ public class ThreadDeRecepcao implements Runnable
     {
         try
         {
-            while (!socket.isClosed())
+            while (!roteador.socket.isClosed())
             {
                 DatagramPacket pacoteRecebido = new DatagramPacket(buffer, buffer.length);
 
-                socket.receive(pacoteRecebido);
+                roteador.socket.receive(pacoteRecebido);
 
                 String mensagem = new String(pacoteRecebido.getData(), 0, pacoteRecebido.getLength());
                 String ipOrigem = pacoteRecebido.getAddress().getHostAddress();
@@ -57,7 +54,7 @@ public class ThreadDeRecepcao implements Runnable
         }
         catch (Exception e)
         {
-            if (!socket.isClosed())
+            if (!roteador.socket.isClosed())
             {
                 System.err.println("Erro ao receber mensagem: " + e.getMessage());
             }
