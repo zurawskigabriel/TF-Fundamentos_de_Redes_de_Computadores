@@ -42,7 +42,7 @@ Sistema de roteamento de mensagens em Java utilizando sockets UDP, implementando
 **Observação:** Ao ler o arquivo de configuração inicial, enviar mensagem de anúncio com o próprio IP para se apresentar aos vizinhos.
 
 **Funcionalidades:**
-- [ ] Leitura de arquivo de configuração com IPs dos vizinhos iniciais
+- [x] Leitura de arquivo de configuração com IPs dos vizinhos iniciais
 - [ ] Envio de mensagens de anúncio (HELLO) para descobrir vizinhos
 - [ ] Envio periódico de mensagens HELLO a cada 10 segundos
 - [ ] Detecção de vizinhos inativos após 15 segundos sem resposta
