@@ -31,9 +31,6 @@ public class Roteador
 
     public void Ligar()
     {
-        // Descomentar quando implementar a leitura do arquivo de vizinhos
-        LerTXTComVizinhos();
-
         try
         {
             socket = new DatagramSocket(PORTA_LOCAL);
@@ -44,6 +41,9 @@ public class Roteador
             System.out.println("  enviar <ip> <mensagem>");
             System.out.println("  sair");
             System.out.println("===================================================");
+
+            // Carrega vizinhos e envia anúncios (agora que o socket está pronto)
+            LerTXTComVizinhos();
 
             Thread threadDeRecepcao = new Thread(new ThreadDeRecepcao(this));
             Thread threadDeHeartbeat = new Thread(new ThreadDeHeartbeat(this));
@@ -77,13 +77,22 @@ public class Roteador
             System.err.println("[ERRO] Erro ao ler arquivo de vizinhos: " + e.getMessage());
         }
 
-        for (String ip : IPsDeVizinhos)
+        for (String ipVizinho : IPsDeVizinhos)
         {
-            EnviarMensagemDeAnuncio(ip);
-            tabelaDeVizinhos.AdicionarVizinho(ip);
-            // Perguntar para a professora se isso deve ser feito, pois, em teoria vou receber anúncios de rota dos vizinhos por conta das linhas anteriores.
-            tabelaDeRoteamento.AdicionarRota(ip, 1, ip);
+            ipVizinho = ipVizinho.trim();
+
+            // Ignora linhas vazias e o próprio IP
+            if (ipVizinho.isEmpty() || ipVizinho.equals(this.ip))
+            {
+                continue;
+            }
+
+            tabelaDeVizinhos.AdicionarVizinho(ipVizinho);
+            tabelaDeRoteamento.AdicionarRota(ipVizinho, 1, ipVizinho);
+            EnviarMensagemDeAnuncio(ipVizinho);
         }
+
+        System.out.println("[LOG] " + tabelaDeVizinhos.vizinhos.size() + " vizinho(s) carregado(s) do arquivo.");
     }
 
     public void EnviarMensagemDeTexto(String ipDestino, String mensagem)
@@ -113,6 +122,20 @@ public class Roteador
 
     public void EnviarMensagemDeAnuncio(String ipDestino)
     {
-        // TODO: Implementar o envio da mensagem de anúncio (@)
+        try
+        {
+            String mensagem = "@" + this.ip;
+            byte[] buffer = mensagem.getBytes();
+
+            InetAddress enderecoDestino = InetAddress.getByName(ipDestino);
+            DatagramPacket pacote = new DatagramPacket(buffer, buffer.length, enderecoDestino, PORTA_LOCAL);
+
+            socket.send(pacote);
+            System.out.println("[ENVIADO @] | Para: " + ipDestino + " | Mensagem: " + mensagem);
+        }
+        catch (Exception e)
+        {
+            System.err.println("[ERRO] Falha ao enviar mensagem de anúncio para " + ipDestino + ": " + e.getMessage());
+        }
     }
 }

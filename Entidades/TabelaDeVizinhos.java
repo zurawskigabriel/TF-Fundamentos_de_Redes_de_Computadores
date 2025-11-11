@@ -18,4 +18,9 @@ public class TabelaDeVizinhos
         for (Vizinho n : vizinhos) if (n.ip.equals(ip)) return; // Se o vizinho já existe na tabela, não o adiciona novamente
         vizinhos.add(nodo);
     }
+
+    public void RemoverVizinho(String ip)
+    {
+
+    }
 }
