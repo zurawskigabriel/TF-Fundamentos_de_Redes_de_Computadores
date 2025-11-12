@@ -31,7 +31,7 @@ public class TabelaDeRoteamento
     public void RemoverRota(String ipDestino)
     {
         rotas.removeIf(rota -> rota.ipEntrada.equals(ipDestino));
-        System.out.println("[LOG] Rota para " + ipDestino + " removida da tabela de roteamento.");
+        GerenciadorDeOutput.log("[LOG] Rota para " + ipDestino + " removida da tabela de roteamento.");
     }
 
     public void RemoverRotasPorProximoSalto(String ipProximoSalto)
@@ -46,7 +46,7 @@ public class TabelaDeRoteamento
         });
         
         if (!rotasRemovidas.isEmpty()) {
-            System.out.println("[LOG] " + rotasRemovidas.size() + " rota(s) removida(s) devido à falha do próximo salto " + ipProximoSalto);
+            GerenciadorDeOutput.log("[LOG] " + rotasRemovidas.size() + " rota(s) removida(s) devido à falha do próximo salto " + ipProximoSalto);
         }
     }
 
@@ -75,7 +75,7 @@ public class TabelaDeRoteamento
             {
                 // Se não existe rota para esse destino, adiciona a nova rota
                 rotas.add(novaRota);
-                System.out.println("[LOG] Nova rota adicionada - Destino: " + novaRota.ipEntrada + 
+                GerenciadorDeOutput.log("[LOG] Nova rota adicionada - Destino: " + novaRota.ipEntrada + 
                                    " | Métrica: " + novaRota.metrica + 
                                    " | Próximo Salto: " + novaRota.ipSaida);
             }
@@ -84,7 +84,7 @@ public class TabelaDeRoteamento
                 // Se já existe, verifica se a nova rota tem métrica menor
                 if (novaRota.metrica < rotaExistente.metrica)
                 {
-                    System.out.println("[LOG] Rota atualizada - Destino: " + novaRota.ipEntrada + 
+                    GerenciadorDeOutput.log("[LOG] Rota atualizada - Destino: " + novaRota.ipEntrada + 
                                        " | Métrica antiga: " + rotaExistente.metrica + 
                                        " | Métrica nova: " + novaRota.metrica + 
                                        " | Próximo Salto: " + novaRota.ipSaida);
@@ -97,7 +97,7 @@ public class TabelaDeRoteamento
                     // Atualiza a métrica mesmo que seja maior, pois vem do mesmo próximo salto
                     if (novaRota.metrica != rotaExistente.metrica)
                     {
-                        System.out.println("[LOG] Rota atualizada (mesmo próximo salto) - Destino: " + novaRota.ipEntrada + 
+                        GerenciadorDeOutput.log("[LOG] Rota atualizada (mesmo próximo salto) - Destino: " + novaRota.ipEntrada + 
                                            " | Métrica antiga: " + rotaExistente.metrica + 
                                            " | Métrica nova: " + novaRota.metrica);
                         rotaExistente.metrica = novaRota.metrica;

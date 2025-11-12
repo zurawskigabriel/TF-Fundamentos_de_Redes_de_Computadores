@@ -1,6 +1,7 @@
 package Threads;
 import java.util.Scanner;
 
+import Entidades.GerenciadorDeOutput;
 import Entidades.Roteador;
 
 public class ThreadDoTerminal implements Runnable
@@ -68,6 +69,7 @@ public class ThreadDoTerminal implements Runnable
         catch (Exception e)
         {
             System.err.println("[ERRO] Erro no terminal: " + e.getMessage());
+            GerenciadorDeOutput.log("[ERRO] Erro no terminal: " + e.getMessage());
         }
         finally
         {

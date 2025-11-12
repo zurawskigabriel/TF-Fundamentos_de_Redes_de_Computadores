@@ -39,12 +39,12 @@ public class ThreadDeHeartbeat implements Runnable
             }
             catch (InterruptedException e)
             {
-                System.err.println("[ERRO] Thread de heartbeat interrompida: " + e.getMessage());
+                Entidades.GerenciadorDeOutput.log("[ERRO] Thread de heartbeat interrompida: " + e.getMessage());
                 break;
             }
             catch (Exception e)
             {
-                System.err.println("[ERRO] Erro na thread de heartbeat: " + e.getMessage());
+                Entidades.GerenciadorDeOutput.log("[ERRO] Erro na thread de heartbeat: " + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -70,7 +70,7 @@ public class ThreadDeHeartbeat implements Runnable
         // Remove vizinhos inativos e suas rotas
         for (Vizinho vizinhoInativo : vizinhosInativos)
         {
-            System.out.println("[LOG] Vizinho " + vizinhoInativo.ip + " inativo há mais de 15 segundos. Removendo...");
+            Entidades.GerenciadorDeOutput.log("[LOG] Vizinho " + vizinhoInativo.ip + " inativo há mais de 15 segundos. Removendo...");
             
             // Remove todas as rotas que usam esse vizinho como próximo salto
             roteador.tabelaDeRoteamento.RemoverRotasPorProximoSalto(vizinhoInativo.ip);

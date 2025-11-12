@@ -36,6 +36,8 @@ public class Roteador
             socket = new DatagramSocket(PORTA_LOCAL);
 
             System.out.println("===================================================");
+            System.out.println("        TERMINAL DE COMANDOS DO ROTEADOR");
+            System.out.println("===================================================");
             System.out.println("Roteador iniciado em " + ip + ":" + PORTA_LOCAL);
             System.out.println("Comandos disponíveis:");
             System.out.println("  enviar <ip> <mensagem>");
@@ -44,6 +46,10 @@ public class Roteador
             System.out.println("  ler");
             System.out.println("  sair");
             System.out.println("===================================================");
+            
+            GerenciadorDeOutput.log("===================================================");
+            GerenciadorDeOutput.log("Roteador iniciado em " + ip + ":" + PORTA_LOCAL);
+            GerenciadorDeOutput.log("===================================================");
 
             // Carrega vizinhos e envia anúncios (agora que o socket está pronto)
             LerTXTComVizinhos();
@@ -59,6 +65,8 @@ public class Roteador
             threadDoTerminal.join();
 
             socket.close();
+            GerenciadorDeOutput.log("[LOG] Roteador encerrado.");
+            GerenciadorDeOutput.fechar();
             System.out.println("[LOG] Roteador encerrado.");
             System.exit(0);
 
@@ -77,7 +85,7 @@ public class Roteador
         }
         catch (IOException e)
         {
-            System.err.println("[ERRO] Erro ao ler arquivo de vizinhos: " + e.getMessage());
+            GerenciadorDeOutput.log("[ERRO] Erro ao ler arquivo de vizinhos: " + e.getMessage());
         }
 
         for (String ipVizinho : IPsDeVizinhos)
@@ -95,7 +103,7 @@ public class Roteador
             EnviarMensagemDeAnuncio(ipVizinho);
         }
 
-        System.out.println("[LOG] " + tabelaDeVizinhos.vizinhos.size() + " vizinho(s) carregado(s) do arquivo.");
+        GerenciadorDeOutput.log("[LOG] " + tabelaDeVizinhos.vizinhos.size() + " vizinho(s) carregado(s) do arquivo.");
     }
 
     public void EnviarMensagemDeTexto(String ipDestino, String mensagem)
@@ -122,7 +130,7 @@ public class Roteador
 
                 if (rotaEncontrada == null)
                 {
-                    System.out.println("[ERRO] Não há rota para o destino " + ipDestinoReal);
+                    GerenciadorDeOutput.log("[ERRO] Não há rota para o destino " + ipDestinoReal);
                     return;
                 }
 
@@ -132,7 +140,7 @@ public class Roteador
                 DatagramPacket pacote = new DatagramPacket(mensagemCodificada, mensagemCodificada.length, enderecoProximoSalto, PORTA_LOCAL);
                 socket.send(pacote);
 
-                System.out.println("[ENVIADO !] | Reencaminhando para próximo salto: " + rotaEncontrada.ipSaida + " | Destino final: " + ipDestinoReal);
+                GerenciadorDeOutput.log("[ENVIADO !] | Reencaminhando para próximo salto: " + rotaEncontrada.ipSaida + " | Destino final: " + ipDestinoReal);
             }
             else
             {
@@ -184,11 +192,11 @@ public class Roteador
             DatagramPacket pacote = new DatagramPacket(buffer, buffer.length, enderecoDestino, PORTA_LOCAL);
 
             socket.send(pacote);
-            System.out.println("[ENVIADO @] | Para: " + ipDestino + " | Mensagem: " + mensagem);
+            GerenciadorDeOutput.log("[ENVIADO @] | Para: " + ipDestino + " | Mensagem: " + mensagem);
         }
         catch (Exception e)
         {
-            System.err.println("[ERRO] Falha ao enviar mensagem de anúncio para " + ipDestino + ": " + e.getMessage());
+            GerenciadorDeOutput.log("[ERRO] Falha ao enviar mensagem de anúncio para " + ipDestino + ": " + e.getMessage());
         }
     }
 
@@ -213,11 +221,11 @@ public class Roteador
                 InetAddress enderecoDestino = InetAddress.getByName(vizinho.ip);
                 DatagramPacket pacote = new DatagramPacket(buffer, buffer.length, enderecoDestino, PORTA_LOCAL);
                 socket.send(pacote);
-                System.out.println("[ENVIADO *] | Para: " + vizinho.ip + " | Rotas: " + tabelaDeRoteamento.rotas.size());
+                GerenciadorDeOutput.log("[ENVIADO *] | Para: " + vizinho.ip + " | Rotas: " + tabelaDeRoteamento.rotas.size());
             }
             catch (Exception e)
             {
-                System.err.println("[ERRO] Falha ao enviar atualização de tabela para " + vizinho.ip + ": " + e.getMessage());
+                GerenciadorDeOutput.log("[ERRO] Falha ao enviar atualização de tabela para " + vizinho.ip + ": " + e.getMessage());
             }
         }
     }
