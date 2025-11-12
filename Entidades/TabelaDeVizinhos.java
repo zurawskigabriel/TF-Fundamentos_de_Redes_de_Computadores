@@ -21,7 +21,20 @@ public class TabelaDeVizinhos
 
     public void RemoverVizinho(String ip)
     {
-        // TODO: Remover vizinho
+        vizinhos.removeIf(vizinho -> vizinho.ip.equals(ip));
+        System.out.println("[LOG] Vizinho " + ip + " removido da tabela de vizinhos.");
+    }
+
+    public Vizinho BuscarVizinho(String ip)
+    {
+        for (Vizinho vizinho : vizinhos)
+        {
+            if (vizinho.ip.equals(ip))
+            {
+                return vizinho;
+            }
+        }
+        return null;
     }
 
     public void MostrarTabelaDeVizinhos()

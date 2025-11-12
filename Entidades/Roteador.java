@@ -39,6 +39,9 @@ public class Roteador
             System.out.println("Roteador iniciado em " + ip + ":" + PORTA_LOCAL);
             System.out.println("Comandos disponíveis:");
             System.out.println("  enviar <ip> <mensagem>");
+            System.out.println("  vizinhos");
+            System.out.println("  rotas");
+            System.out.println("  ler");
             System.out.println("  sair");
             System.out.println("===================================================");
 
@@ -99,19 +102,69 @@ public class Roteador
     {
         try
         {
-            // Converte a mensagem em bytes
-            byte[] mensagemCodificada = mensagem.getBytes();
+            // Se a mensagem já está no formato correto (!<ipOrigem>;<ipDestino>;<texto>), envia diretamente
+            if (mensagem.startsWith("!"))
+            {
+                // Mensagem já está formatada (está sendo reencaminhada)
+                String[] partes = mensagem.substring(1).split(";");
+                String ipDestinoReal = partes[1];
 
-            // Cria o pacote UDP
-            InetAddress enderecoDestino = InetAddress.getByName(ipDestino);
-            DatagramPacket pacote = new DatagramPacket(mensagemCodificada, mensagemCodificada.length, enderecoDestino, PORTA_LOCAL);
+                // Procura a rota para o destino
+                Rota rotaEncontrada = null;
+                for (Rota rota : tabelaDeRoteamento.rotas)
+                {
+                    if (rota.ipEntrada.equals(ipDestinoReal))
+                    {
+                        rotaEncontrada = rota;
+                        break;
+                    }
+                }
 
-            // TODO: Procura o próximo salto na tabela de roteamento
+                if (rotaEncontrada == null)
+                {
+                    System.out.println("[ERRO] Não há rota para o destino " + ipDestinoReal);
+                    return;
+                }
 
-            // TODO: Envia o pacote para o próximo salto
+                // Envia para o próximo salto
+                byte[] mensagemCodificada = mensagem.getBytes();
+                InetAddress enderecoProximoSalto = InetAddress.getByName(rotaEncontrada.ipSaida);
+                DatagramPacket pacote = new DatagramPacket(mensagemCodificada, mensagemCodificada.length, enderecoProximoSalto, PORTA_LOCAL);
+                socket.send(pacote);
 
+                System.out.println("[ENVIADO !] | Reencaminhando para próximo salto: " + rotaEncontrada.ipSaida + " | Destino final: " + ipDestinoReal);
+            }
+            else
+            {
+                // Mensagem original (primeira vez enviando)
+                // Procura a rota para o destino
+                Rota rotaEncontrada = null;
+                for (Rota rota : tabelaDeRoteamento.rotas)
+                {
+                    if (rota.ipEntrada.equals(ipDestino))
+                    {
+                        rotaEncontrada = rota;
+                        break;
+                    }
+                }
 
-            System.out.println("[LOG] Mensagem \"" + mensagem + "\" enviada para " + ipDestino + ":" + PORTA_LOCAL);
+                if (rotaEncontrada == null)
+                {
+                    System.out.println("[ERRO] Não há rota para o destino " + ipDestino);
+                    return;
+                }
+
+                // Formata a mensagem: !<ipOrigem>;<ipDestino>;<texto>
+                String mensagemFormatada = "!" + this.ip + ";" + ipDestino + ";" + mensagem;
+                byte[] mensagemCodificada = mensagemFormatada.getBytes();
+
+                // Envia para o próximo salto
+                InetAddress enderecoProximoSalto = InetAddress.getByName(rotaEncontrada.ipSaida);
+                DatagramPacket pacote = new DatagramPacket(mensagemCodificada, mensagemCodificada.length, enderecoProximoSalto, PORTA_LOCAL);
+                socket.send(pacote);
+
+                System.out.println("[ENVIADO !] | Para próximo salto: " + rotaEncontrada.ipSaida + " | Destino final: " + ipDestino + " | Mensagem: " + mensagem);
+            }
 
         } catch (NumberFormatException e) {
             System.out.println("[ERRO] Porta inválida. Deve ser um número.");
@@ -136,6 +189,36 @@ public class Roteador
         catch (Exception e)
         {
             System.err.println("[ERRO] Falha ao enviar mensagem de anúncio para " + ipDestino + ": " + e.getMessage());
+        }
+    }
+
+    public void EnviarAtualizacaoDeTabelaParaTodosVizinhos()
+    {
+        // Constrói a mensagem com todas as rotas
+        StringBuilder mensagem = new StringBuilder("*");
+
+        for (Rota rota : tabelaDeRoteamento.rotas)
+        {
+            mensagem.append("*").append(rota.ipEntrada).append(";").append(rota.metrica);
+        }
+
+        String mensagemFinal = mensagem.toString();
+        byte[] buffer = mensagemFinal.getBytes();
+
+        // Envia para todos os vizinhos
+        for (Vizinho vizinho : tabelaDeVizinhos.vizinhos)
+        {
+            try
+            {
+                InetAddress enderecoDestino = InetAddress.getByName(vizinho.ip);
+                DatagramPacket pacote = new DatagramPacket(buffer, buffer.length, enderecoDestino, PORTA_LOCAL);
+                socket.send(pacote);
+                System.out.println("[ENVIADO *] | Para: " + vizinho.ip + " | Rotas: " + tabelaDeRoteamento.rotas.size());
+            }
+            catch (Exception e)
+            {
+                System.err.println("[ERRO] Falha ao enviar atualização de tabela para " + vizinho.ip + ": " + e.getMessage());
+            }
         }
     }
 }

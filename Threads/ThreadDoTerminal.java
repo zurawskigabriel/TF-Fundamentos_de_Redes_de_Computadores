@@ -57,6 +57,8 @@ public class ThreadDoTerminal implements Runnable
                     case "rotas":
                         roteador.tabelaDeRoteamento.MostrarTabelaDeRotas();
                         break;
+                    case "ler":
+                        roteador.LerTXTComVizinhos();
                     default:
                         System.out.println("[ERRO] Comando não reconhecido.");
                         break;
