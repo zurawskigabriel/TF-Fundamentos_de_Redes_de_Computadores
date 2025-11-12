@@ -70,20 +70,65 @@ public class ThreadDeRecepcao implements Runnable
         String ipAnunciado = mensagem.substring(1);
         System.out.println("\n[RECEBIDO @] | IP Anunciado: " + ipAnunciado + " [" + mensagem +']');
         roteador.tabelaDeVizinhos.AdicionarVizinho(ipAnunciado);
-        roteador.tabelaDeRoteamento.AdicionarRota(ipAnunciado, 1, ipAnunciado); // Não sei se está certo colocar o próximo salto como o próprio IP anunciado, perguntar para professora.
+        roteador.tabelaDeRoteamento.AdicionarRota(ipAnunciado, 1, ipAnunciado);
     }
 
     private void TratarMensagemDeAtualizacaoDeTabela(DatagramPacket pacoteRecebido)
     {
-        List<Rota> novasRotas;
+        List<Rota> novasRotas = new java.util.ArrayList<>();
 
         String mensagem = new String(pacoteRecebido.getData(), 0, pacoteRecebido.getLength());
 
         System.out.println("\n[RECEBIDO *] | [" + mensagem +']');
 
-        // TODO: Implementar o parser das mensagens com as novas rotas (conforme o enunciado) e atualizar a tabela de roteamento
+        try
+        {
+            // Obtém o IP do roteador que enviou a mensagem (próximo salto)
+            String ipProximoSalto = pacoteRecebido.getAddress().getHostAddress();
 
-        //roteador.AtualizarTabela(mensagem);
+            // Divide a mensagem em tuplas usando "*" como delimitador
+            // O primeiro elemento será vazio devido ao "*" inicial, então começamos do índice 1
+            String[] tuplas = mensagem.split("\\*");
+
+            for (int i = 1; i < tuplas.length; i++)
+            {
+                String tupla = tuplas[i];
+
+                // Verificar se a tupla não está vazia
+                if (!tupla.isEmpty())
+                {
+                    // Dividir a tupla em IP e métrica usando ";" como delimitador
+                    String[] partes = tupla.split(";");
+
+                    if (partes.length == 2)
+                    {
+                        String ipDestino = partes[0];
+                        int metrica = Integer.parseInt(partes[1]);
+
+                        // Incrementar a métrica em 1 (custo para chegar ao vizinho)
+                        int metricaTotal = metrica + 1;
+
+                        // Criar a nova rota
+                        Rota novaRota = new Rota(ipDestino, metricaTotal, ipProximoSalto);
+                        novasRotas.add(novaRota);
+
+                        System.out.println("[LOG] Rota parseada - Destino: " + ipDestino + " | Métrica: " + metricaTotal + " | Próximo Salto: " + ipProximoSalto);
+                    }
+                    else
+                    {
+                        System.err.println("[ERRO] Tupla com formato inválido: " + tupla);
+                    }
+                }
+            }
+
+            // Atualizar a tabela de roteamento com as novas rotas
+            roteador.tabelaDeRoteamento.AtualizarRotas(novasRotas);
+        }
+        catch (Exception e)
+        {
+            System.err.println("[ERRO] Erro ao parsear mensagem de atualização: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void TratarMensagemDeTexto(DatagramPacket pacoteRecebido)

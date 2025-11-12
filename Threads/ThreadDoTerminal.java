@@ -1,7 +1,4 @@
 package Threads;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.Scanner;
 
 import Entidades.Roteador;
@@ -53,6 +50,12 @@ public class ThreadDoTerminal implements Runnable
                         String mensagem = partes[1];
 
                         roteador.EnviarMensagemDeTexto(ipDestino, mensagem);
+                        break;
+                    case "vizinhos":
+                        roteador.tabelaDeVizinhos.MostrarTabelaDeVizinhos();
+                        break;
+                    case "rotas":
+                        roteador.tabelaDeRoteamento.MostrarTabelaDeRotas();
                         break;
                     default:
                         System.out.println("[ERRO] Comando não reconhecido.");

@@ -21,6 +21,15 @@ public class TabelaDeVizinhos
 
     public void RemoverVizinho(String ip)
     {
+        // TODO: Remover vizinho
+    }
 
+    public void MostrarTabelaDeVizinhos()
+    {
+        System.out.println("Tabela de Vizinhos:");
+        for (Vizinho vizinho : vizinhos)
+        {
+            System.out.println("- " + vizinho.ip);
+        }
     }
 }

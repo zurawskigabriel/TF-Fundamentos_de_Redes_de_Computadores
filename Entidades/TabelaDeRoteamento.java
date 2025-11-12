@@ -27,4 +27,13 @@ public class TabelaDeRoteamento
     {
         // TODO: Implementar a atualização das rotas
     }
+
+    public void MostrarTabelaDeRotas()
+    {
+        System.out.println("Tabela de Roteamento:");
+        for (Rota rota : rotas)
+        {
+            System.out.println("- Destino: " + rota.ipEntrada + ", Métrica: " + rota.metrica + ", Próximo Salto: " + rota.ipSaida);
+        }
+    }
 }
