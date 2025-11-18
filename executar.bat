@@ -23,7 +23,7 @@ echo Compilacao concluida com sucesso!
 echo.
 echo Iniciando o roteador...
 echo.
-echo Envio automatico de tabelas: %1
+echo Heartbeat: %1
 echo.
 
 REM Executa a partir da pasta bin

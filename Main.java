@@ -9,14 +9,13 @@ public class Main
 {
     public static void main(String[] args)
     {
-        // Define se deve enviar tabela automaticamente (padrão: true)
-        boolean enviarTabelaAutomaticamente = true;
-        
+        boolean ativarHeartbeat = true;
+
         if (args.length > 0)
         {
-            enviarTabelaAutomaticamente = Boolean.parseBoolean(args[0]);
+            ativarHeartbeat = Boolean.parseBoolean(args[0]);
         }
-        
+
         // Abre o terminal de logs em uma nova janela
         try {
             String os = System.getProperty("os.name").toLowerCase();
@@ -57,7 +56,7 @@ public class Main
         // Inicializa o gerenciador de output
         GerenciadorDeOutput.Ativar();
 
-        Roteador roteador = new Roteador(ip, enviarTabelaAutomaticamente);
+        Roteador roteador = new Roteador(ip, ativarHeartbeat);
         roteador.Ligar();
     }
 }

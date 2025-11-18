@@ -21,12 +21,12 @@ public class Roteador
     public TabelaDeRoteamento tabelaDeRoteamento;
     public TabelaDeVizinhos tabelaDeVizinhos;
     public DatagramSocket socket;
-    public boolean enviarTabelaAutomaticamente;
+    public boolean hearbeatAtivado;
 
-    public Roteador(String ip, boolean enviarTabelaAutomaticamente)
+    public Roteador(String ip, boolean hearbeatAtivado)
     {
         this.ip = ip;
-        this.enviarTabelaAutomaticamente = enviarTabelaAutomaticamente;
+        this.hearbeatAtivado = hearbeatAtivado;
         tabelaDeRoteamento = new TabelaDeRoteamento();
         tabelaDeVizinhos = new TabelaDeVizinhos();
     }
