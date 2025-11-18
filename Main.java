@@ -22,7 +22,7 @@ public class Main
             if (os.contains("win"))
             {
                 // Windows
-                ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "start", "cmd", "/k", "java -cp . TerminalDeLogs");
+                ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "start", "cmd", "/k", "java -cp bin TerminalDeLogs");
                 pb.directory(new java.io.File(System.getProperty("user.dir")));
                 pb.start();
             } else
