@@ -145,8 +145,4 @@ O sistema utiliza mensagens UDP com prefixos para identificar o tipo:
 
 ## Autores
 
-Projeto desenvolvido como Trabalho Final da disciplina de Fundamentos de Redes de Computadores.
-
-## Licença
-
-Este projeto é de uso educacional.
+Projeto desenvolvido como Trabalho Final da disciplina de Fundamentos de Redes de Computadores por Gabriel Zurawski e Gustavo Melo.

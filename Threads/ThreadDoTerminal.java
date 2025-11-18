@@ -69,7 +69,7 @@ public class ThreadDoTerminal implements Runnable
         catch (Exception e)
         {
             System.err.println("[ERRO] Erro no terminal: " + e.getMessage());
-            GerenciadorDeOutput.log("[ERRO] Erro no terminal: " + e.getMessage());
+            GerenciadorDeOutput.Log("[ERRO] Erro no terminal: " + e.getMessage());
         }
         finally
         {

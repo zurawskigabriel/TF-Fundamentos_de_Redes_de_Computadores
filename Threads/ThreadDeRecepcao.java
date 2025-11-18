@@ -47,7 +47,7 @@ public class ThreadDeRecepcao implements Runnable
                         TratarMensagemDeTexto(pacoteRecebido);
                         break;
                     default:
-                        Entidades.GerenciadorDeOutput.log("\n[ERRO] Tipo desconhecido de mensagem de " + ipOrigem + ":" + portaOrigem + " | Corpo da mensagem: " + mensagem);
+                        Entidades.GerenciadorDeOutput.Log("\n[ERRO] Tipo desconhecido de mensagem de " + ipOrigem + ":" + portaOrigem + " | Corpo da mensagem: " + mensagem);
                         break;
                 }
 
@@ -58,7 +58,7 @@ public class ThreadDeRecepcao implements Runnable
         {
             if (!roteador.socket.isClosed())
             {
-                Entidades.GerenciadorDeOutput.log("[ERRO] Erro ao receber mensagem: " + e.getMessage());
+                Entidades.GerenciadorDeOutput.Log("[ERRO] Erro ao receber mensagem: " + e.getMessage());
             }
         }
     }
@@ -68,7 +68,7 @@ public class ThreadDeRecepcao implements Runnable
         String mensagem = new String(pacoteRecebido.getData(), 0, pacoteRecebido.getLength());
 
         String ipAnunciado = mensagem.substring(1);
-        Entidades.GerenciadorDeOutput.log("\n[RECEBIDO @] | IP Anunciado: " + ipAnunciado + " [" + mensagem +']');
+        Entidades.GerenciadorDeOutput.Log("\n[RECEBIDO @] | IP Anunciado: " + ipAnunciado + " [" + mensagem +']');
         roteador.tabelaDeVizinhos.AdicionarVizinho(ipAnunciado);
         roteador.tabelaDeRoteamento.AdicionarRota(ipAnunciado, 1, ipAnunciado);
 
@@ -86,7 +86,7 @@ public class ThreadDeRecepcao implements Runnable
 
         String mensagem = new String(pacoteRecebido.getData(), 0, pacoteRecebido.getLength());
 
-        Entidades.GerenciadorDeOutput.log("\n[RECEBIDO *] | [" + mensagem +']');
+        Entidades.GerenciadorDeOutput.Log("\n[RECEBIDO *] | [" + mensagem +']');
 
         try
         {
@@ -126,11 +126,11 @@ public class ThreadDeRecepcao implements Runnable
                         Rota novaRota = new Rota(ipDestino, metricaTotal, ipProximoSalto);
                         novasRotas.add(novaRota);
 
-                        Entidades.GerenciadorDeOutput.log("[LOG] Rota parseada - Destino: " + ipDestino + " | Métrica: " + metricaTotal + " | Próximo Salto: " + ipProximoSalto);
+                        Entidades.GerenciadorDeOutput.Log("[LOG] Rota parseada - Destino: " + ipDestino + " | Métrica: " + metricaTotal + " | Próximo Salto: " + ipProximoSalto);
                     }
                     else
                     {
-                        Entidades.GerenciadorDeOutput.log("[ERRO] Tupla com formato inválido: " + tupla);
+                        Entidades.GerenciadorDeOutput.Log("[ERRO] Tupla com formato inválido: " + tupla);
                     }
                 }
             }
@@ -140,7 +140,7 @@ public class ThreadDeRecepcao implements Runnable
         }
         catch (Exception e)
         {
-            Entidades.GerenciadorDeOutput.log("[ERRO] Erro ao parsear mensagem de atualização: " + e.getMessage());
+            Entidades.GerenciadorDeOutput.Log("[ERRO] Erro ao parsear mensagem de atualização: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -166,19 +166,19 @@ public class ThreadDeRecepcao implements Runnable
 
             if (ipDestinoDoCorpo.equals(roteador.ip))
             {
-                Entidades.GerenciadorDeOutput.log("\n[RECEBIDO ! ENTREGA REALIZADA] | Texto: " + texto + " | Origem: " + ipOrigemDoCorpo + " | Destino: " + ipDestinoDoCorpo + " | [" + mensagem +']');
+                Entidades.GerenciadorDeOutput.Log("\n[RECEBIDO ! ENTREGA REALIZADA] | Texto: " + texto + " | Origem: " + ipOrigemDoCorpo + " | Destino: " + ipDestinoDoCorpo + " | [" + mensagem +']');
                 return;
             }
             else
             {
-                Entidades.GerenciadorDeOutput.log("\n[RECEBIDO ! ENTREGA NÃO REALIZADA] | Texto: " + texto + " | Origem: " + ipOrigemDoCorpo + " | Destino: " + ipDestinoDoCorpo + " | [" + mensagem +']');
+                Entidades.GerenciadorDeOutput.Log("\n[RECEBIDO ! ENTREGA NÃO REALIZADA] | Texto: " + texto + " | Origem: " + ipOrigemDoCorpo + " | Destino: " + ipDestinoDoCorpo + " | [" + mensagem +']');
                 // Reencaminha a mensagem original (sem modificar)
                 roteador.EnviarMensagemDeTexto(ipDestinoDoCorpo, mensagem);
             }
         }
         catch (Exception e)
         {
-            Entidades.GerenciadorDeOutput.log("[ERRO] Erro ao processar mensagem de texto: " + e.getMessage());
+            Entidades.GerenciadorDeOutput.Log("[ERRO] Erro ao processar mensagem de texto: " + e.getMessage());
         }
     }
 }

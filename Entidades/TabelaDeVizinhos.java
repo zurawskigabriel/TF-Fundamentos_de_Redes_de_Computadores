@@ -22,7 +22,7 @@ public class TabelaDeVizinhos
     public void RemoverVizinho(String ip)
     {
         vizinhos.removeIf(vizinho -> vizinho.ip.equals(ip));
-        GerenciadorDeOutput.log("[LOG] Vizinho " + ip + " removido da tabela de vizinhos.");
+        GerenciadorDeOutput.Log("[LOG] Vizinho " + ip + " removido da tabela de vizinhos.");
     }
 
     public Vizinho BuscarVizinho(String ip)

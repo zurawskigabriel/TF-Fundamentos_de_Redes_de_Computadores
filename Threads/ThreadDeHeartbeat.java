@@ -29,7 +29,10 @@ public class ThreadDeHeartbeat implements Runnable
             {
                 // Envia mensagens de atualização com o conteúdo da tabela de roteamento
                 // (apenas os campos IP de Destino e Métrica) para seus vizinhos
-                roteador.EnviarAtualizacaoDeTabelaParaTodosVizinhos();
+                if (roteador.enviarTabelaAutomaticamente)
+                {
+                    roteador.EnviarAtualizacaoDeTabelaParaTodosVizinhos();
+                }
 
                 // Verifica se algum vizinho não enviou mensagens de heartbeat nos últimos 15 segundos
                 VerificarVizinhosInativos();
@@ -39,12 +42,12 @@ public class ThreadDeHeartbeat implements Runnable
             }
             catch (InterruptedException e)
             {
-                Entidades.GerenciadorDeOutput.log("[ERRO] Thread de heartbeat interrompida: " + e.getMessage());
+                Entidades.GerenciadorDeOutput.Log("[ERRO] Thread de heartbeat interrompida: " + e.getMessage());
                 break;
             }
             catch (Exception e)
             {
-                Entidades.GerenciadorDeOutput.log("[ERRO] Erro na thread de heartbeat: " + e.getMessage());
+                Entidades.GerenciadorDeOutput.Log("[ERRO] Erro na thread de heartbeat: " + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -70,7 +73,7 @@ public class ThreadDeHeartbeat implements Runnable
         // Remove vizinhos inativos e suas rotas
         for (Vizinho vizinhoInativo : vizinhosInativos)
         {
-            Entidades.GerenciadorDeOutput.log("[LOG] Vizinho " + vizinhoInativo.ip + " inativo há mais de 15 segundos. Removendo...");
+            Entidades.GerenciadorDeOutput.Log("[LOG] Vizinho " + vizinhoInativo.ip + " inativo há mais de 15 segundos. Removendo...");
             
             // Remove todas as rotas que usam esse vizinho como próximo salto
             roteador.tabelaDeRoteamento.RemoverRotasPorProximoSalto(vizinhoInativo.ip);
