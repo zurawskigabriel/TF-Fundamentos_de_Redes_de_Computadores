@@ -45,7 +45,7 @@ public class Roteador
             System.out.println("  enviar <ip> <mensagem>");
             System.out.println("  vizinhos");
             System.out.println("  rotas");
-            System.out.println("  ler");
+            System.out.println("  anunciar");
             System.out.println("  sair");
             System.out.println("===================================================");
 
@@ -101,8 +101,6 @@ public class Roteador
             }
 
             tabelaDeVizinhos.AdicionarVizinho(ipVizinho);
-            tabelaDeRoteamento.AdicionarRota(ipVizinho, 1, ipVizinho);
-            EnviarMensagemDeAnuncio(ipVizinho);
         }
 
         GerenciadorDeOutput.Log("[LOG] " + tabelaDeVizinhos.vizinhos.size() + " vizinho(s) carregado(s) do arquivo.");
@@ -176,9 +174,13 @@ public class Roteador
                 System.out.println("[ENVIADO !] | Para próximo salto: " + rotaEncontrada.ipSaida + " | Destino final: " + ipDestino + " | Mensagem: " + mensagem);
             }
 
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e)
+        {
             System.out.println("[ERRO] Porta inválida. Deve ser um número.");
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             System.err.println("[ERRO] Erro ao enviar mensagem: " + e.getMessage());
         }
     }
@@ -199,6 +201,14 @@ public class Roteador
         catch (Exception e)
         {
             GerenciadorDeOutput.Log("[ERRO] Falha ao enviar mensagem de anúncio para " + ipDestino + ": " + e.getMessage());
+        }
+    }
+
+    public void SeAnunciarParaTodosVizinhos()
+    {
+        for (Vizinho vizinho : tabelaDeVizinhos.vizinhos)
+        {
+            EnviarMensagemDeAnuncio(vizinho.ip);
         }
     }
 
