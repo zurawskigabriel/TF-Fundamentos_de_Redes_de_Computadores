@@ -53,9 +53,6 @@ public class Roteador
             GerenciadorDeOutput.Log("Roteador iniciado em " + ip + ":" + PORTA_LOCAL);
             GerenciadorDeOutput.Log("===================================================");
 
-            // Carrega vizinhos e envia anúncios (agora que o socket está pronto)
-            LerTXTComVizinhos();
-
             Thread threadDeRecepcao = new Thread(new ThreadDeRecepcao(this));
             Thread threadDeHeartbeat = new Thread(new ThreadDeHeartbeat(this));
             Thread threadDoTerminal = new Thread(new ThreadDoTerminal(this));
@@ -101,6 +98,8 @@ public class Roteador
             }
 
             tabelaDeVizinhos.AdicionarVizinho(ipVizinho);
+            tabelaDeRoteamento.AdicionarRota(ipVizinho, 1, ipVizinho);
+            EnviarMensagemDeAnuncio(ipVizinho);
         }
 
         GerenciadorDeOutput.Log("[LOG] " + tabelaDeVizinhos.vizinhos.size() + " vizinho(s) carregado(s) do arquivo.");
@@ -201,14 +200,6 @@ public class Roteador
         catch (Exception e)
         {
             GerenciadorDeOutput.Log("[ERRO] Falha ao enviar mensagem de anúncio para " + ipDestino + ": " + e.getMessage());
-        }
-    }
-
-    public void SeAnunciarParaTodosVizinhos()
-    {
-        for (Vizinho vizinho : tabelaDeVizinhos.vizinhos)
-        {
-            EnviarMensagemDeAnuncio(vizinho.ip);
         }
     }
 

@@ -59,7 +59,7 @@ public class ThreadDoTerminal implements Runnable
                         roteador.tabelaDeRoteamento.MostrarTabelaDeRotas();
                         break;
                     case "anunciar":
-                        roteador.SeAnunciarParaTodosVizinhos();
+                        roteador.LerTXTComVizinhos();
                         break;
                     default:
                         System.out.println("[ERRO] Comando não reconhecido.");
