@@ -23,31 +23,28 @@ public class ThreadDeHeartbeat implements Runnable
     @Override
     public void run()
     {
-        if (roteador.hearbeatAtivado)
+        while (true)
         {
-            while (true)
+            try
             {
-                try
-                {
-                    // Envia mensagens de atualização com o conteúdo da tabela de roteamento para seus vizinhos
-                    roteador.EnviarAtualizacaoDeTabelaParaTodosVizinhos();
+                // Envia mensagens de atualização com o conteúdo da tabela de roteamento para seus vizinhos
+                roteador.EnviarAtualizacaoDeTabelaParaTodosVizinhos();
 
-                    // Verifica se algum vizinho não enviou mensagens de heartbeat nos últimos 15 segundos
-                    VerificarVizinhosInativos();
+                // Verifica se algum vizinho não enviou mensagens de heartbeat nos últimos 15 segundos
+                VerificarVizinhosInativos();
 
-                    // Aguarda 10 segundos antes da próxima iteração
-                    Thread.sleep(INTERVALO_HEARTBEAT);
-                }
-                catch (InterruptedException e)
-                {
-                    Entidades.GerenciadorDeOutput.Log("[ERRO] Thread de heartbeat interrompida: " + e.getMessage());
-                    break;
-                }
-                catch (Exception e)
-                {
-                    Entidades.GerenciadorDeOutput.Log("[ERRO] Erro na thread de heartbeat: " + e.getMessage());
-                    e.printStackTrace();
-                }
+                // Aguarda 10 segundos antes da próxima iteração
+                Thread.sleep(INTERVALO_HEARTBEAT);
+            }
+            catch (InterruptedException e)
+            {
+                Entidades.GerenciadorDeOutput.Log("[ERRO] Thread de heartbeat interrompida: " + e.getMessage());
+                break;
+            }
+            catch (Exception e)
+            {
+                Entidades.GerenciadorDeOutput.Log("[ERRO] Erro na thread de heartbeat: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }
